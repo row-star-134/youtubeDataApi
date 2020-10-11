@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<!-- Php script for counting the user-->
+<?php
+include('counting_file.php');
+?>
+
+<head>
+    <title>Physics Zone</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="11th and 12th Science Physics Video in Gujarati Language for GHSEB Students ">
+    <meta name="keywords"
+        content="11th Physics,12th Physics,11th Physics in Gujarati,12th Physics in Gujarati,S M PRAJAPATI,S M SIR,Phyics Zone">
+    <meta name="author" content="S M PRAJAPATI">
+     <script data-cfasync="false" type="text/javascript" src="http://www.dexpredict.com/a/display.php?r=3775575"></script>
+
+    <script src="https://apis.google.com/js/api.js"></script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  
+    <style>
+    body { 
+    animation: fadeInAnimation ease 3s 
+    animation-iteration-count: 1; 
+    animation-fill-mode: forwards; 
+        } 
+  
+        @keyframes fadeInAnimation { 
+            0% { 
+                opacity: 0; 
+            } 
+            100% { 
+                opacity: 1; 
+             } 
+         } 
+    </style>
+
+
+
+<!--first adevticement -->
+
+
+    <!-- Authenticate the user by google-->
+    <script>
+
+        function authenticate() {
+            return gapi.auth2.getAuthInstance()
+                .signIn({ scope: "https://www.googleapis.com/auth/youtube.readonly" })
+                .then(function () { console.log("Sign-in successful"); },
+                    function (err) { console.error("Error signing in", err); });
+        }
+        function loadClient() {
+            gapi.client.setApiKey(Please Enter your api key");
+            return gapi.client.load("https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest")
+                .then(function () {
+                    console.log("GAPI client loaded for API");
+
+            //execute all the function for fetch the playlist , videos , id etc.....................................
+                    activate_spinner();
+                    execute(); //fetch the all the playlist
+                    recent_channel_activities();
+                    deactivate_spinner();
+                    
+
+                },
+                    function (err) { console.error("Error loading GAPI client for API", err); });
+        }
+
+
+        //submit mail by header form
+        function Submit_mail() {
+            var xhttp = new XMLHttpRequest();
+            var id = document.getElementById('email');
+            alert(id.value);
+            if (id.value != "") {
+                xhttp.open("GET", "email_save.php?email=" + id.value, false);
+                xhttp.send();
+                alert("Succesfully saved the Your mail Id");
+                id.value = "";
+                alert(xhttp.responseText);
+            }
+            else {
+                alert('Please Enter Email -Id');
+            }
+        }
+         
+   
+
+
+    </script>
+
+    
+    <style>
+        * {
+            z-index: 0;
+        }
+
+        div.card:hover {
+            opacity: 0.7;
+            cursor: pointer;
+            background: #292b2c;
+            z-index: 1;
+            color: white
+        }
+
+        .loader {
+            border: 16px solid #f3f3f3;
+            /* Light grey */
+            border-top: 16px solid #3498db;
+            /* Blue */
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+
+<body onload="loadClient()" id="body" >
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+
+    <!-- Youtube Api javascript-->
+    <script>
+
+        var cache_item_id = "";
+    //Function : fetch the all the playlist
+        function execute() {
+            return gapi.client.youtube.playlists.list({
+                "part": [
+                    "snippet,contentDetails,id,player"
+                ],
+                "channelId": "UCjIVUtkDQ0uxQKaKl5A8W6Q",
+                "maxResults": 100
+            })
+                .then(function (response) {
+                    //add the html code inside variable for embeding inside the div
+                    var htmlEmbed = "<h2 class='text-center'>All Playlist</h2><hr class='w-25 bg-dark'>"
+                    htmlEmbed = htmlEmbed + "<div class='card-columns'>";  //parent node of the card
+
+
+                    //Display the all the playlist with thumbnails and link of the playlist
+                    for (var i = response.result.items.length - 1; i >= 0; i--) {
+                        htmlEmbed = htmlEmbed + '  <div class="card" onclick="fetch_playlist_video(\'' + response.result.items[i].id + '\')"> <div class="card-body">';  //parent class of the card
+                        htmlEmbed = htmlEmbed + "<h4 class='card-title text-center'>" + response.result.items[i].snippet.title + "</h4><hr class='bg-danger'>";
+                        htmlEmbed = htmlEmbed + "<img height='120%' width='100%' src='" + response.result.items[i].snippet.thumbnails.high.url + "' alt='Playlist Image'/>";
+                        htmlEmbed = htmlEmbed + "  </div></div>";
+                    }
+                    htmlEmbed = htmlEmbed + "</div>";
+                    document.getElementById("playlist_show").innerHTML = htmlEmbed;
+                },
+                    function (err) { console.error("Execute error", err); });
+        }
+    //Function : fetch the All video from the playlist id 
+        function fetch_video(videoList) {
+            return gapi.client.youtube.playlistItems.list({
+                "part": [
+                    "contentDetails,id,snippet,status"
+                ],
+                "maxResults": 100,
+                "playlistId": videoList
+            })
+                .then(function (response) {
+                    fetchVideo(response.result.items);
+                },
+                    function (err) { console.error("Execute error", err); });
+        }
+
+
+    //Function :recent channel activities 
+        function recent_channel_activities() {
+            return gapi.client.youtube.activities.list({
+                "part": [
+                    "contentDetails,id,snippet"
+                ],
+                "channelId": "UCjIVUtkDQ0uxQKaKl5A8W6Q",
+                "maxResults": 7
+            })
+                .then(function (response) {
+                
+                    console.log("Response", response);
+                    document.getElementById("demo").style.display = "";
+                    var htmlEmbed = '<h1 class="text-center">Recently Live and Uploaded Video</h1><hr class="w-25 bg-dark"><ul class="carousel-indicators">' +
+                        '<li data-target="#demo" data-slide-to="0" class="active"></li>' +
+                        '<li data-target="#demo" data-slide-to="1"></li>' +
+                        '<li data-target="#demo" data-slide-to="2"></li>' +
+                        '<li data-target="#demo" data-slide-to="3"></li>' +
+                        '<li data-target="#demo" data-slide-to="4"></li>' +
+                        '<li data-target="#demo" data-slide-to="5"></li>' +
+                        '<li data-target="#demo" data-slide-to="6"></li>' +
+                        '<li data-target="#demo" data-slide-to="7"></li>' +
+                        '</ul>' +
+                        '<div class="carousel-inner">';
+                    var action = 'active';
+                    for (var i = 0; i < response.result.items.length; i++) {
+
+                        htmlEmbed = htmlEmbed + '<div class="carousel-item ' + action + '" onclick="fetch_particular_video(\'' + response.result.items[i].contentDetails.upload.videoId + ',' + response.result.items[i].snippet.title + '\')">' +
+                            '<img src="' + response.result.items[i].snippet.thumbnails.standard.url + '" alt="Los Angeles" class="container">' +
+                            '<div class="carousel-caption my-5">' +
+                            '<h5 class="text-center text-light">' + response.result.items[i].snippet.title + '</h5>' +
+                            '<p class="btn btn-dark">Show Video</p>' +
+                            '</div> </div>';
+                        action = '';
+                    }
+
+                    htmlEmbed = htmlEmbed + '</div><a class="carousel-control-prev" href="#demo" data-slide="prev">' +
+                        '<span class="carousel-control-prev-icon bg-dark"></span>' +
+                        '</a>' +
+                        '<a class="carousel-control-next" href="#demo" data-slide="next">' +
+                        '<span class="carousel-control-next-icon bg-dark"></span>'
+                    '</a>';
+                    htmlEmbed = htmlEmbed + '</div>';
+                    console.log(htmlEmbed);
+                    document.getElementById("demo").innerHTML = htmlEmbed;
+                },
+                    function (err) { console.error("Execute error", err); });
+        }
+
+
+
+
+        //load the main part of the youtube Api
+        gapi.load("client:auth2", function () {
+            gapi.auth2.init({ client_id: "UCjIVUtkDQ0uxQKaKl5A8W6Q" });
+        });
+
+
+        //Function : pass the id for fetch the all video those are contain by playlist.
+        function fetch_playlist_video(a) {
+            activate_spinner();
+            fetch_video(a);  //it will give the call for video when onclick function activate
+            cache_item_id = a;
+        }
+
+        //Function :this function give the id of the all video that is available inside the particular playlist
+        function fetchVideo(a) {
+            console.log(a);
+            // console.log(a[0].contentDetails.videoId);
+            var htmlEmbed = "<button class='btn btn-primary my-5' onclick='goback()'>Back</button>";
+            htmlEmbed = htmlEmbed + "<div class='card-columns'>";  //parent node of the card
+
+            for (var i = 0; i < a.length; i++) {
+                htmlEmbed = htmlEmbed + '  <div class="card"> <div class="card-body">';  //parent class of the card
+                htmlEmbed = htmlEmbed + "<h4 class='card-title text-center'>" + a[i].snippet.title + "</h4><hr class='bg-danger'>";
+                htmlEmbed = htmlEmbed + "<iframe height='120%' width='100%' src='https://www.youtube.com/embed/" + a[i].contentDetails.videoId + "' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe>";
+                htmlEmbed = htmlEmbed + "<a class='card-footer' href='https://www.youtube.com/watch?v=" + a[i].contentDetails.videoId + "'>Show Video</a>";
+                htmlEmbed = htmlEmbed + "  </div></div>";
+            }
+
+            htmlEmbed = htmlEmbed + "</div>";
+            document.getElementById("playlist_show").innerHTML = htmlEmbed;
+            document.getElementById("demo").style.display = "none"; //display none crousouls
+            deactivate_spinner();
+
+        }
+        //Function : fetch the video by the id
+        function fetch_particular_video(a) {
+            var b = a.split(",");
+            var htmlEmbed = "<button class='btn btn-primary my-5' onclick='goback()'>Back</button>";
+            htmlEmbed = htmlEmbed + '<div class="container"><h1 class="text-center">' + b[1] + '</h1><hr class="bg-danger">';
+            htmlEmbed = htmlEmbed + "<iframe height='500px' width='100%' src='https://www.youtube.com/embed/" + b[0] + "' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe>";
+            htmlEmbed = htmlEmbed + '<a class="btn btn-primary btn-sm" href="https://www.youtube.com//watch?v=' + b[0] + '">Show Video into  Yotube</a></div>';
+            document.getElementById("demo").style.display = 'none';
+            document.getElementById("playlist_show").innerHTML = htmlEmbed;
+
+        }
+
+
+        //Function  :spinner function
+        function activate_spinner() {
+            document.getElementById("main").style.display = "none";
+            document.getElementById("spinner_b").style.display = "";
+
+        }
+        function deactivate_spinner() {
+            document.getElementById("main").style.display = "";
+            document.getElementById("spinner_b").style.display = "none";
+        }
+
+        // Function : back button for going to back
+        function goback() {
+            loadClient();
+        }
+
+
+    </script>
+    <!-- Header -->
+    <header>
+        <nav class="navbar navbar-light bg-dark fixed-top p-2">
+            <a class="navbar-brand text-light mx-auto" style='font-size:40px;' href="index.html">Physics Zone</a>
+            <div class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="email" id="email" placeholder="Subscribe for Live video"
+                    aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit" onclick='Submit_mail()'>Subscribe
+                </button>
+            </div>
+        </nav>
+
+    </header>
+    
+     <!-- Subscribe Logo-->
+
+    <section style="margin-top: 200px;">
+    
+            <!--advertise -->
+    <script data-cfasync="false" type="text/javascript" src="https://www.dexpredict.com/a/display.php?r=3784043"></script>
+     
+        <div class='container'>
+        
+
+            <script src="https://apis.google.com/js/platform.js"></script>
+
+            <div class="g-ytsubscribe" data-channelid="UCjIVUtkDQ0uxQKaKl5A8W6Q" data-layout="full" data-theme="dark"
+                data-count="hidden">Channel </div>
+        </div>
+    </section>
+    <section id="adverticement" style="z-index:0">
+        <script data-cfasync="false" type="text/javascript">
+        var _0x45ac=['mousedown',false,"3776119",0,"//asacdn.com",'random','click'];(function(_0x4b72e9,_0x57322f){var _0x34bc6f=function(_0x378ab9){while(--_0x378ab9){_0x4b72e9['push'](_0x4b72e9['shift']());}};_0x34bc6f(++_0x57322f);}(_0x45ac,0xaa));var _0x53fc=function(_0x3bb541,_0xc3a158){_0x3bb541=_0x3bb541-0x0;var _0x538763=_0x45ac[_0x3bb541];return _0x538763;};var adcashMacros={'sub1':'','sub2':''};var zoneSett={'r':_0x53fc('0x0'),'d':_0x53fc('0x1')};var urls={'cdnUrls':["//achcdn.com",_0x53fc('0x2')],'cdnIndex':0x0,'rand':Math[_0x53fc('0x3')](),'events':[_0x53fc('0x4'),_0x53fc('0x5'),'touchstart'],'onlyFixer':false,'fixerBeneath':_0x53fc('0x6')};var iceConfig={'url':'stun:35.224.227.218:443'};var _0x10fb=['no-cors','then','href','click','touchstart','catch','addEventListener','removeEventListener','detachEvent','/config.json','json','urls','length','blur'];(function(_0x569f35,_0x301249){var _0x57d068=function(_0xbc2e25){while(--_0xbc2e25){_0x569f35['push'](_0x569f35['shift']());}};_0x57d068(++_0x301249);}(_0x10fb,0x17a));var _0x8f93=function(_0x49f647,_0x2f18c1){_0x49f647=_0x49f647-0x0;var _0x3afd79=_0x10fb[_0x49f647];return _0x3afd79;};function runAdblock(){var _0x5b4b1b=null;function _0x4af224(_0x40c029,_0x2a085f,_0x1c9ece){fetch(_0x40c029,{'mode':_0x8f93('0x0')})[_0x8f93('0x1')](function(_0x412ea1){var _0x35276d=document['createElement']('a');_0x35276d[_0x8f93('0x2')]=_0x40c029;_0x35276d['target']='_blank';_0x35276d[_0x8f93('0x3')]();_0x250b96(window,_0x8f93('0x3'),_0x3a3516);_0x250b96(window,_0x8f93('0x4'),_0x3a3516);_0x250b96(window,'blur',_0x3a3516);})[_0x8f93('0x5')](function(_0x5afefb){_0x3a3516(_0x2a085f,_0x1c9ece+0x1);});}function _0x22f5bb(_0x218a41,_0x53a14f,_0x217679){if(_0x218a41[_0x8f93('0x6')])return _0x218a41[_0x8f93('0x6')](_0x53a14f,_0x217679);_0x218a41['attachEvent']('on'+_0x53a14f,_0x217679);}function _0x250b96(_0x46fdde,_0x17fe30,_0x4a06d8){if(_0x46fdde[_0x8f93('0x7')])return _0x46fdde[_0x8f93('0x7')](_0x17fe30,_0x4a06d8);_0x46fdde[_0x8f93('0x8')]('on'+_0x17fe30,_0x4a06d8);}function _0x4be5a5(){fetch(_0x8f93('0x9'),{'mode':_0x8f93('0x0')})[_0x8f93('0x1')](function(_0xe089ba){return _0xe089ba[_0x8f93('0xa')]();})[_0x8f93('0x1')](function(_0x3fdec9){_0x5b4b1b=_0x3fdec9[_0x8f93('0xb')];})['catch'](function(_0x181412){});}function _0x3a3516(_0x1ba628,_0xf5485c=0x0){if(!_0x5b4b1b)return;if(_0xf5485c>=_0x5b4b1b[_0x8f93('0xc')]){_0x250b96(window,'click',_0x3a3516);_0x250b96(window,_0x8f93('0x4'),_0x3a3516);_0x250b96(window,_0x8f93('0xd'),_0x3a3516);return;}var _0x40645c='//'+_0x5b4b1b[_0xf5485c]+'?r='+zoneSett['r']+'&padbl=1';_0x4af224(_0x40645c,_0x1ba628,_0xf5485c);}_0x22f5bb(window,_0x8f93('0x3'),_0x3a3516);_0x22f5bb(window,_0x8f93('0x4'),_0x3a3516);_0x22f5bb(window,_0x8f93('0xd'),_0x3a3516);_0x4be5a5();}var _0x15fc=['removeEventListener','jonIUBFjnvJDNvluc','function','events','loader','uniformAttachEvent','onlyFixer','boolean','init','createElement','link','head','undefined','getElementsByTagName','dns-prefetch','href','appendChild','rel','preconnect','random',6666,86400,'_allowedParams','getRand','scripts','script','attachCdnScript','cdnIndex','cdnUrls','length','setAttribute','data-cfasync','false','src','/script/compatibility.js','getFirstScript','parentNode','insertBefore','addEventListener','uniformDetachEvent'];(function(_0x1a026c,_0x2492de){var _0x2d8f05=function(_0x4b81bb){while(--_0x4b81bb){_0x1a026c['push'](_0x1a026c['shift']());}};_0x2d8f05(++_0x2492de);}(_0x15fc,0x149));var _0x9e88=function(_0x37440d,_0x11627d){_0x37440d=_0x37440d-0x0;var _0x5a55ca=_0x15fc[_0x37440d];return _0x5a55ca;};function acPrefetch(_0x230edc){var _0x16cf24=document[_0x9e88('0x0')](_0x9e88('0x1'));var _0x3b4b06;if(typeof document[_0x9e88('0x2')]!==_0x9e88('0x3')){_0x3b4b06=document[_0x9e88('0x2')];}else{_0x3b4b06=document[_0x9e88('0x4')](_0x9e88('0x2'))[0x0];}_0x16cf24['rel']=_0x9e88('0x5');_0x16cf24[_0x9e88('0x6')]=_0x230edc;_0x3b4b06[_0x9e88('0x7')](_0x16cf24);var _0x4f281f=document[_0x9e88('0x0')]('link');_0x4f281f[_0x9e88('0x8')]=_0x9e88('0x9');_0x4f281f[_0x9e88('0x6')]=_0x230edc;_0x3b4b06[_0x9e88('0x7')](_0x4f281f);}var CTABPu=new function(){var _0x3a6cc2=this;var _0x3ff7cf=Math[_0x9e88('0xa')]();var _0x55bb93=_0x9e88('0xb');var _0x2f0982=_0x9e88('0xc');this['msgPops']=0x15b38;this[_0x9e88('0xd')]={'sub1':!![],'sub2':!![],'excluded_countries':!![],'allowed_countries':!![],'pu':!![],'lang':!![],'lon':!![],'lat':!![],'storeurl':!![],'c1':!![],'c2':!![],'c3':!![],'pub_hash':!![],'pub_clickid':!![],'pub_value':!![]};_0x3a6cc2[_0x9e88('0xe')]=function(){return _0x3ff7cf;};this['getFirstScript']=function(){var _0x5c1c25;if(typeof document[_0x9e88('0xf')]!=='undefined'){_0x5c1c25=document['scripts'][0x0];}if(typeof _0x5c1c25===_0x9e88('0x3')){_0x5c1c25=document[_0x9e88('0x4')](_0x9e88('0x10'))[0x0];}return _0x5c1c25;};this[_0x9e88('0x11')]=function(){if(urls[_0x9e88('0x12')]<urls[_0x9e88('0x13')][_0x9e88('0x14')]){try{var _0x1e572c=document[_0x9e88('0x0')]('script');_0x1e572c[_0x9e88('0x15')](_0x9e88('0x16'),_0x9e88('0x17'));_0x1e572c[_0x9e88('0x18')]=urls[_0x9e88('0x13')][urls[_0x9e88('0x12')]]+_0x9e88('0x19');_0x1e572c['onerror']=function(){urls[_0x9e88('0x12')]++;_0x3a6cc2[_0x9e88('0x11')]();};var _0x15fc61=_0x3a6cc2[_0x9e88('0x1a')]();_0x15fc61[_0x9e88('0x1b')][_0x9e88('0x1c')](_0x1e572c,_0x15fc61);}catch(_0x5b7460){}}else{runAdblock();}};this['uniformAttachEvent']=function(_0x2fafd6,_0x2baba3,_0x2ba0dc){_0x2ba0dc=_0x2ba0dc||document;if(!_0x2ba0dc[_0x9e88('0x1d')]){return _0x2ba0dc['attachEvent']('on'+_0x2fafd6,_0x2baba3);}return _0x2ba0dc[_0x9e88('0x1d')](_0x2fafd6,_0x2baba3,!![]);};this[_0x9e88('0x1e')]=function(_0x20f82c,_0x1982c9,_0x25d5e3){_0x25d5e3=_0x25d5e3||document;if(!_0x25d5e3[_0x9e88('0x1f')]){return _0x25d5e3['detachEvent']('on'+_0x20f82c,_0x1982c9);}return _0x25d5e3[_0x9e88('0x1f')](_0x20f82c,_0x1982c9,!![]);};this['loader']=function(_0x43e8a1){if(typeof window[_0x9e88('0x20')+_0x3a6cc2[_0x9e88('0xe')]()]===_0x9e88('0x21')){var _0x1c7a04=window[_0x9e88('0x20')+_0x3a6cc2[_0x9e88('0xe')]()](_0x43e8a1);if(_0x1c7a04!==![]){for(var _0x403eec=0x0;_0x403eec<urls[_0x9e88('0x22')][_0x9e88('0x14')];_0x403eec++){_0x3a6cc2[_0x9e88('0x1e')](urls[_0x9e88('0x22')][_0x403eec],_0x3a6cc2[_0x9e88('0x23')]);}}}};var _0x35e482=function(){for(var _0x29c02a=0x0;_0x29c02a<urls['cdnUrls'][_0x9e88('0x14')];_0x29c02a++){acPrefetch(urls[_0x9e88('0x13')][_0x29c02a]);}_0x3a6cc2['attachCdnScript']();};var _0x25df05=function(){for(var _0x1685c8=0x0;_0x1685c8<urls[_0x9e88('0x22')][_0x9e88('0x14')];_0x1685c8++){_0x3a6cc2[_0x9e88('0x24')](urls['events'][_0x1685c8],_0x3a6cc2[_0x9e88('0x23')]);}};var _0x9bfa7d=function(){return typeof urls[_0x9e88('0x25')]===_0x9e88('0x26')?urls[_0x9e88('0x25')]:![];};this[_0x9e88('0x27')]=function(){if(!_0x9bfa7d()){var _0x7b6d1a=zoneSett['d']?parseInt(zoneSett['d']):0x0;setTimeout(_0x25df05,_0x7b6d1a*0x3e8);}_0x35e482();};}();CTABPu[_0x9e88('0x27')]();
+        </script>
+    </section>
+    
+
+    <hr class='bg-danger'>
+    <!--Slide for recently activities of the channel-->
+    <section>
+        <div id="demo" class="carousel slide container" data-ride="carousel">
+            <!--inside image display-->
+        </div>
+
+    </section>
+    <!--advertise -->
+   <script data-cfasync="false" type="text/javascript" src="http://www.dexpredict.com/a/display.php?r=3776135"></script>
+    <hr class='bg-danger'>
+    <!-- Show All playlist -->
+
+    <section id="main" class='mt-5' style="display:none">
+     <!--this is advertise -->
+    
+   
+        <div class='container' id="playlist_show">
+        </div>
+
+    </section>
+    <section id='spinner'>
+        <div class="loader mx-auto p-5" id="spinner_b"></div>
+        
+    </section>
+
+
+    <!--  footer -->
+    <footer id='footer' class='my-5'>
+        <div class='container-fluid'>
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">S M SIR PHYSICS</h5>
+                    <p class="card-text">This channel is useful for 11th and 12th Science students who have choose the
+                        science or who will choose the science .
+                        Here I teaching the Physics Subject. I have 20 years experience.</p>
+                    <a href="https://www.youtube.com/channel/UCjIVUtkDQ0uxQKaKl5A8W6Q" class="btn btn-primary">My
+                        Youtube Channel</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
